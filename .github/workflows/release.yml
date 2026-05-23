@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+jobs:
+  release:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install CMake
+      uses: lukka/get-cmake@v3
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      shell: bash
+    
+    - name: Build Release
+      run: cmake --build build --config Release
+      shell: bash
+    
+    - name: Package artifacts
+      run: |
+        # 创建发布目录
+        New-Item -ItemType Directory -Path "release" -Force
+        
+        # 复制 Hook DLL
+        if (Test-Path "build\Release\*.dll") {
+          Copy-Item "build\Release\*.dll" -Destination "release\" -Force
+        }
+        
+        # 复制测试程序（如果有）
+        if (Test-Path "build\Release\*.exe") {
+          Copy-Item "build\Release\*.exe" -Destination "release\" -Force
+        }
+        
+        # 复制文档
+        if (Test-Path "README.md") {
+          Copy-Item "README.md" -Destination "release\" -Force
+        }
+        if (Test-Path "LICENSE") {
+          Copy-Item "LICENSE" -Destination "release\" -Force
+        }
+        if (Test-Path "BUILD.md") {
+          Copy-Item "BUILD.md" -Destination "release\" -Force
+        }
+        
+        # 打包
+        7z a ai-thinapp-portable.zip .\release\*
+      shell: pwsh
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # 提取版本号
+        $tag = "${{ github.ref }}".Replace("refs/tags/", "")
+        Write-Output "Tag: $tag"
+        
+        # 生成简单的变更日志（从 git log 提取）
+        $changelog = git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^ 2>$null)..HEAD 2>$null
+        if (-not $changelog) {
+          $changelog = git log --pretty=format:"- %s" HEAD 2>$null
+        }
+        
+        # 写入文件
+        $content = "# Release $tag`n`n## Changes`n`n$changelog"
+        $content | Out-File -FilePath "CHANGELOG.md" -Encoding UTF8
+        
+        Write-Output "Changelog generated"
+        Get-Content "CHANGELOG.md"
+      shell: pwsh
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ai-thinapp-portable.zip
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,98 @@
+name: Code Sign
+
+# 注意：此工作流是可选的，仅在拥有代码签名证书时使用
+# 需要配置以下 GitHub Secrets：
+# - CODE_SIGN_CERT: 代码签名证书文件（Base64 编码）
+# - CODE_SIGN_PASSWORD: 证书密码
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  sign:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-Release-x64
+        path: build/Release
+    
+    - name: Decode certificate
+      env:
+        CERTIFICATE_BASE64: ${{ secrets.CODE_SIGN_CERT }}
+      run: |
+        # 将 Base64 编码的证书解码为文件
+        $certBytes = [Convert]::FromBase64String($env:CERTIFICATE_BASE64)
+        [IO.File]::WriteAllBytes("certificate.pfx", $certBytes)
+        Write-Output "Certificate decoded"
+      shell: pwsh
+      # 注意：如果没有配置 CODE_SIGN_CERT secret，此步骤会失败
+      continue-on-error: true
+    
+    - name: Sign executable files
+      env:
+        PASSWORD: ${{ secrets.CODE_SIGN_PASSWORD }}
+      run: |
+        # 检查证书是否存在
+        if (-not (Test-Path "certificate.pfx")) {
+          Write-Output "Warning: No code signing certificate found. Skipping code signing."
+          exit 0
+        }
+        
+        # 导入证书到当前用户证书存储
+        $securePassword = ConvertTo-SecureString -String $env:PASSWORD -AsPlainText -Force
+        Import-PfxCertificate -FilePath "certificate.pfx" -Password $securePassword -CertStoreLocation "Cert:\CurrentUser\My"
+        
+        # 查找 SignTool
+        $signtool = Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" | Select-Object -First 1 -ExpandProperty FullName
+        
+        if (-not $signtool) {
+          Write-Error "SignTool not found"
+          exit 1
+        }
+        
+        # 签名 DLL 文件
+        $files = Get-ChildItem -Path "build\Release" -Filter "*.dll" -Recurse
+        
+        foreach ($file in $files) {
+          Write-Output "Signing: $($file.FullName)"
+          & $signtool sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /a $file.FullName
+        }
+        
+        # 签名 EXE 文件（如果有）
+        $exes = Get-ChildItem -Path "build\Release" -Filter "*.exe" -Recurse
+        
+        foreach ($exe in $exes) {
+          Write-Output "Signing: $($exe.FullName)"
+          & $signtool sign /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /a $exe.FullName
+        }
+        
+        Write-Output "Code signing completed"
+      shell: pwsh
+      continue-on-error: true
+    
+    - name: Verify signatures
+      run: |
+        # 验证签名
+        $files = Get-ChildItem -Path "build\Release" -Include "*.dll","*.exe" -Recurse
+        
+        foreach ($file in $files) {
+          $signature = Get-AuthenticodeSignature $file.FullName
+          Write-Output "$($file.Name): $($signature.Status)"
+        }
+      shell: pwsh
+      continue-on-error: true
+    
+    - name: Upload signed artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: signed-build-Release-x64
+        path: build/Release/
+        retention-days: 90
