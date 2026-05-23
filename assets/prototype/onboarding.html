@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎使用 AI ThinApp Launchpad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        .step-indicator.active {
+            background: #667eea;
+            color: white;
+        }
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 min-h-screen flex items-center justify-center">
+    <!-- 主容器 -->
+    <div class="max-w-2xl w-full mx-4">
+        <!-- 步骤指示器 -->
+        <div class="flex items-center justify-center mb-8 space-x-4">
+            <div id="step1-indicator" class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+                1
+            </div>
+            <div class="w-16 h-1 bg-white bg-opacity-30"></div>
+            <div id="step2-indicator" class="step-indicator w-10 h-10 rounded-full bg-white bg-opacity-30 flex items-center justify-center font-bold text-lg text-white">
+                2
+            </div>
+            <div class="w-16 h-1 bg-white bg-opacity-30"></div>
+            <div id="step3-indicator" class="step-indicator w-10 h-10 rounded-full bg-white bg-opacity-30 flex items-center justify-center font-bold text-lg text-white">
+                3
+            </div>
+        </div>
+
+        <!-- 步骤1：欢迎页 + 产品介绍 -->
+        <div id="step1" class="bg-white rounded-2xl shadow-2xl p-12 fade-in">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-5xl mx-auto mb-6">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">欢迎使用 AI ThinApp Launchpad</h1>
+                <p class="text-lg text-gray-600 mb-8">让你的软件随处可用</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex items-start space-x-4 p-4 bg-green-50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-500 text-2xl mt-1"></i>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">应用文件全部保存在自身目录内</h3>
+                        <p class="text-gray-600">重装系统不丢失，数据随身携带</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4 p-4 bg-blue-50 rounded-lg">
+                    <i class="fas fa-check-circle text-blue-500 text-2xl mt-1"></i>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">软件不会产生系统垃圾</h3>
+                        <p class="text-gray-600">C盘永远干净，系统运行更流畅</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4 p-4 bg-purple-50 rounded-lg">
+                    <i class="fas fa-check-circle text-purple-500 text-2xl mt-1"></i>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">复制应用目录到U盘</h3>
+                        <p class="text-gray-600">到其他电脑也能直接运行，真正的便携化</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button onclick="skipOnboarding()" class="text-gray-500 hover:text-gray-700 transition">
+                    跳过引导 >
+                </button>
+                <button onclick="goToStep(2)" class="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium text-lg">
+                    下一步 <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 步骤2：添加第一个应用 -->
+        <div id="step2" class="bg-white rounded-2xl shadow-2xl p-12 hidden fade-in">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white text-5xl mx-auto mb-6">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">添加你的第一个应用</h1>
+                <p class="text-lg text-gray-600">选择本地已有的exe文件，或者去软件商店下载应用</p>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <button onclick="selectLocalFile()" class="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition text-left">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-2xl">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900 text-lg">选择本地文件</h3>
+                            <p class="text-gray-500">从电脑中选择已安装的 .exe 应用</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </button>
+
+                <button onclick="goToStore()" class="w-full p-6 border-2 border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition text-left">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-2xl">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900 text-lg">去商店下载</h3>
+                            <p class="text-gray-500">从 AI ThinApp 商店下载便携化应用</p>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </button>
+            </div>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+                <div class="flex items-start">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-3 mt-1"></i>
+                    <p class="text-sm text-yellow-700">提示：本地文件会自动创建独立运行空间，无需手动配置。添加的應用會被完全沙箱化，所有文件操作都限制在应用目录内。</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button onclick="goToStep(1)" class="text-gray-500 hover:text-gray-700 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>上一步
+                </button>
+                <button onclick="skipOnboarding()" class="text-gray-500 hover:text-gray-700 transition">
+                    跳过 >
+                </button>
+            </div>
+        </div>
+
+        <!-- 步骤3：启动应用 + 观察沙箱效果 -->
+        <div id="step3" class="bg-white rounded-2xl shadow-2xl p-12 hidden fade-in">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 bg-gradient-to-br from-teal-500 to-green-600 rounded-full flex items-center justify-center text-white text-5xl mx-auto mb-6">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">启动应用，查看效果</h1>
+                <p class="text-lg text-gray-600">你已成功添加"QQ"，现在启动它，看看效果吧！</p>
+            </div>
+
+            <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-8">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                    <h3 class="text-xl font-bold text-green-800">启动成功！</h3>
+                </div>
+                <p class="text-green-700 mb-4">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    看，应用的文件都保存在 <code class="bg-green-100 px-2 py-1 rounded">D:\ThinAppApps\QQ</code> 目录里，不会写到系统盘！
+                </p>
+                <div class="bg-white rounded-lg p-4 border border-green-200">
+                    <h4 class="font-semibold text-gray-900 mb-2">沙箱效果展示：</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><i class="fas fa-shield-alt text-green-500 mr-2"></i>窗口边框显示绿色（沙箱标识）</li>
+                        <li><i class="fas fa-shield-alt text-green-500 mr-2"></i>任务栏图标有绿色角标</li>
+                        <li><i class="fas fa-shield-alt text-green-500 mr-2"></i>文件系统重定向到应用目录</li>
+                        <li><i class="fas fa-shield-alt text-green-500 mr-2"></i>注册表操作不会污染系统</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button onclick="goToStep(2)" class="text-gray-500 hover:text-gray-700 transition">
+                    <i class="fas fa-arrow-left mr-2"></i>上一步
+                </button>
+                <div class="space-x-4">
+                    <button onclick="viewSandbox()" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium">
+                        <i class="fas fa-folder-open mr-2"></i>查看沙箱内容
+                    </button>
+                    <button onclick="finishOnboarding()" class="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium text-lg">
+                        完成 <i class="fas fa-check ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+
+        function goToStep(step) {
+            // 隐藏所有步骤
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+
+            // 重置指示器
+            document.getElementById('step1-indicator').classList.remove('active', 'completed');
+            document.getElementById('step2-indicator').classList.remove('active', 'completed');
+            document.getElementById('step3-indicator').classList.remove('active', 'completed');
+            document.getElementById('step1-indicator').classList.add('bg-white', 'bg-opacity-30', 'text-white');
+            document.getElementById('step2-indicator').classList.add('bg-white', 'bg-opacity-30', 'text-white');
+            document.getElementById('step3-indicator').classList.add('bg-white', 'bg-opacity-30', 'text-white');
+
+            // 显示当前步骤
+            document.getElementById('step' + step).classList.remove('hidden');
+            document.getElementById('step' + step).classList.add('fade-in');
+
+            // 更新指示器
+            for (let i = 1; i <= 3; i++) {
+                const indicator = document.getElementById('step' + i + '-indicator');
+                if (i < step) {
+                    indicator.classList.add('completed');
+                    indicator.innerHTML = '<i class="fas fa-check"></i>';
+                } else if (i === step) {
+                    indicator.classList.add('active');
+                    indicator.textContent = i;
+                } else {
+                    indicator.textContent = i;
+                }
+            }
+
+            currentStep = step;
+        }
+
+        function selectLocalFile() {
+            alert('模拟：打开文件选择器\n（实际实现会调用系统文件选择对话框）');
+            // 模拟添加成功后进入步骤3
+            setTimeout(() => goToStep(3), 500);
+        }
+
+        function goToStore() {
+            window.location.href = 'store.html';
+        }
+
+        function viewSandbox() {
+            window.location.href = 'sandbox-visual.html';
+        }
+
+        function skipOnboarding() {
+            if (confirm('确定要跳过引导吗？你可以随时在设置中重新查看引导。')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function finishOnboarding() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

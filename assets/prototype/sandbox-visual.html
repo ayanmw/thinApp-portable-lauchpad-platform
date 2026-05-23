@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沙箱视觉标识演示 - AI ThinApp Launchpad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        /* 沙箱窗口边框效果 */
+        .sandbox-window {
+            border: 3px solid #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        /* 任务栏角标 */
+        .taskbar-icon {
+            position: relative;
+            display: inline-block;
+        }
+        .taskbar-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            border: 2px solid white;
+        }
+        /* 对比动画 */
+        .compare-container {
+            transition: all 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.location.href='index.html'" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-arrow-left text-xl text-gray-700"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <i class="fas fa-eye text-2xl text-purple-600"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-900">沙箱视觉标识演示</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 说明区域 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-info-circle text-purple-600 mr-2"></i>沙箱视觉标识设计方案
+            </h1>
+            <p class="text-gray-600 mb-4">
+                沙箱视觉标识的核心目标是让用户能<strong>直观、无学习成本</strong>地区分"沙箱内运行的应用"和"真实环境运行的应用"，
+                从而感知应用的隔离状态，理解"便携化"和"沙箱"的核心价值。
+            </p>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+                <p class="text-blue-800">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    <strong>设计原则：</strong>直观性 > 美观性；低学习成本；符合用户习惯
+                </p>
+            </div>
+        </div>
+
+        <!-- 方案A：窗口边框着色 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">
+                <span class="inline-block w-8 h-8 bg-blue-600 text-white rounded-full text-center leading-8 mr-2">A</span>
+                方案A：窗口边框着色
+            </h2>
+            <p class="text-gray-600 mb-6">沙箱内运行的应用窗口边框显示为<strong class="text-green-600">绿色</strong>，真实环境运行的应用窗口边框保持默认颜色。</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 沙箱环境 -->
+                <div class="border rounded-xl p-4">
+                    <h3 class="font-semibold text-gray-900 mb-3">
+                        <i class="fas fa-shield-alt text-green-500 mr-2"></i>沙箱环境（绿色边框）
+                    </h3>
+                    <div class="sandbox-window bg-white rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+                            <div class="flex items-center space-x-2">
+                                <i class="fab fa-qq text-2xl text-blue-500"></i>
+                                <span class="font-medium">QQ - 沙箱模式</span>
+                            </div>
+                            <div class="space-x-2 text-gray-400">
+                                <i class="fas fa-minus"></i>
+                                <i class="fas fa-expand"></i>
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                                <i class="fas fa-user-circle text-3xl text-gray-400"></i>
+                                <div>
+                                    <div class="font-medium">用户A</div>
+                                    <div class="text-sm text-gray-500">你好！</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                                <i class="fas fa-user-circle text-3xl text-gray-400"></i>
+                                <div>
+                                    <div class="font-medium">用户B</div>
+                                    <div class="text-sm text-gray-500">在吗？</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t flex items-center space-x-2">
+                            <input type="text" placeholder="输入消息..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            <button class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-green-600">
+                        <i class="fas fa-check-circle mr-1"></i>窗口边框绿色标识，一眼识别沙箱状态
+                    </div>
+                </div>
+
+                <!-- 真实环境 -->
+                <div class="border rounded-xl p-4">
+                    <h3 class="font-semibold text-gray-900 mb-3">
+                        <i class="fas fa-desktop text-gray-500 mr-2"></i>真实环境（默认边框）
+                    </h3>
+                    <div class="border-3 border-gray-300 bg-white rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b">
+                            <div class="flex items-center space-x-2">
+                                <i class="fab fa-weixin text-2xl text-green-500"></i>
+                                <span class="font-medium">微信</span>
+                            </div>
+                            <div class="space-x-2 text-gray-400">
+                                <i class="fas fa-minus"></i>
+                                <i class="fas fa-expand"></i>
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                                <i class="fas fa-user-circle text-3xl text-gray-400"></i>
+                                <div>
+                                    <div class="font-medium">联系人A</div>
+                                    <div class="text-sm text-gray-500">收到文件</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t flex items-center space-x-2">
+                            <input type="text" placeholder="输入消息..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            <button class="px-4 py-2 bg-green-500 text-white rounded-lg">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>默认窗口边框，无特殊标识
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-2">技术实现</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>Hook 窗口过程（SetWindowLongPtr）</li>
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>子类化窗口过程，修改绘制逻辑</li>
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>难度层级：L3（用户态Hook层）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 方案C：任务栏标识 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">
+                <span class="inline-block w-8 h-8 bg-purple-600 text-white rounded-full text-center leading-8 mr-2">C</span>
+                方案C：任务栏标识
+            </h2>
+            <p class="text-gray-600 mb-6">沙箱内运行的应用在任务栏图标右上角添加<strong class="text-green-600">绿色角标</strong>。</p>
+
+            <!-- 任务栏模拟 -->
+            <div class="bg-gray-800 rounded-lg p-4 mb-6">
+                <div class="flex items-center justify-center space-x-4">
+                    <!-- 普通应用 -->
+                    <div class="taskbar-icon p-2 bg-gray-700 rounded hover:bg-gray-600 transition cursor-pointer">
+                        <i class="fab fa-weixin text-2xl text-green-500"></i>
+                    </div>
+
+                    <!-- 沙箱应用 -->
+                    <div class="taskbar-icon p-2 bg-gray-700 rounded hover:bg-gray-600 transition cursor-pointer">
+                        <i class="fab fa-qq text-2xl text-blue-500"></i>
+                        <div class="taskbar-badge">
+                            <i class="fas fa-check text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- 沙箱应用2 -->
+                    <div class="taskbar-icon p-2 bg-gray-700 rounded hover:bg-gray-600 transition cursor-pointer">
+                        <i class="fab fa-chrome text-2xl text-red-500"></i>
+                        <div class="taskbar-badge">
+                            <i class="fas fa-shield-alt text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- 普通应用 -->
+                    <div class="taskbar-icon p-2 bg-gray-700 rounded hover:bg-gray-600 transition cursor-pointer">
+                        <i class="fas fa-code text-2xl text-blue-400"></i>
+                    </div>
+                </div>
+                <div class="text-center text-gray-400 text-sm mt-3">
+                    <i class="fas fa-info-circle mr-1"></i>Windows 任务栏模拟（深色模式）
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-green-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-green-800 mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>优点
+                    </h4>
+                    <ul class="text-sm text-green-700 space-y-1">
+                        <li>• 符合用户习惯（微信/QQ消息角标）</li>
+                        <li>• 视觉干扰小</li>
+                        <li>• 聚焦运行中的应用</li>
+                    </ul>
+                </div>
+                <div class="bg-yellow-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-yellow-800 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>缺点
+                    </h4>
+                    <ul class="text-sm text-yellow-700 space-y-1">
+                        <li>• 依赖任务栏固定</li>
+                        <li>• 实现复杂度高（Shell编程）</li>
+                        <li>• 不同Windows版本兼容性问题</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-900 mb-2">技术实现</h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>调用 ITaskbarList3::SetOverlayIcon</li>
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>操作 Shell_TrayWnd 的 ToolbarWindow32</li>
+                    <li><i class="fas fa-code text-purple-500 mr-2"></i>难度层级：L4（Shell编程层）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 推荐方案 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border-2 border-green-500 fade-in">
+            <h2 class="text-xl font-bold text-green-700 mb-4">
+                <i class="fas fa-trophy mr-2"></i>推荐方案：任务栏标识 + 窗口边框着色（组合）
+            </h2>
+            <p class="text-gray-600 mb-4">优先实现任务栏标识，再补充窗口边框着色，提供双重提示。</p>
+
+            <div class="bg-green-50 rounded-lg p-4 mb-4">
+                <h4 class="font-semibold text-green-800 mb-2">推荐理由</h4>
+                <ul class="text-sm text-green-700 space-y-2">
+                    <li><i class="fas fa-check mr-2"></i>符合用户习惯：任务栏角标已有认知（微信、QQ）</li>
+                    <li><i class="fas fa-check mr-2"></i>视觉干扰小：角标体积小，边框仅添加颜色</li>
+                    <li><i class="fas fa-check mr-2"></i>覆盖大部分场景：常驻应用看角标，临时应用看边框</li>
+                    <li><i class="fas fa-check mr-2"></i>技术可行：POC/MVP阶段可实现（L3-L4级）</li>
+                </ul>
+            </div>
+
+            <div class="bg-blue-50 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-800 mb-2">实施计划</h4>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li><strong>POC阶段：</strong>实现窗口边框着色（方案A），验证可行性</li>
+                    <li><strong>MVP阶段：</strong>实现任务栏标识（方案C）+ 窗口边框着色（方案A）</li>
+                    <li><strong>V2阶段：</strong>优化兼容性，可选加入窗口水印叠加（方案B）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 对比总结 -->
+        <div class="bg-white rounded-xl shadow-md p-6 fade-in">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-table mr-2 text-purple-600"></i>方案对比总结
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left">方案</th>
+                            <th class="px-4 py-2 text-left">直观性</th>
+                            <th class="px-4 py-2 text-left">视觉干扰</th>
+                            <th class="px-4 py-2 text-left">兼容性</th>
+                            <th class="px-4 py-2 text-left">技术难度</th>
+                            <th class="px-4 py-2 text-left">推荐度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 font-medium">A. 窗口边框着色</td>
+                            <td class="px-4 py-2"><span class="text-green-600">高</span></td>
+                            <td class="px-4 py-2"><span class="text-yellow-600">中</span></td>
+                            <td class="px-4 py-2"><span class="text-green-600">高</span></td>
+                            <td class="px-4 py-2">L3</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded">推荐</span>
+                            </td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 font-medium">B. 窗口水印叠加</td>
+                            <td class="px-4 py-2"><span class="text-green-600">高</span></td>
+                            <td class="px-4 py-2"><span class="text-red-600">高</span></td>
+                            <td class="px-4 py-2"><span class="text-yellow-600">中</span></td>
+                            <td class="px-4 py-2">L3</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded">备选</span>
+                            </td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 font-medium">C. 任务栏标识</td>
+                            <td class="px-4 py-2"><span class="text-green-600">高</span></td>
+                            <td class="px-4 py-2"><span class="text-green-600">低</span></td>
+                            <td class="px-4 py-2"><span class="text-yellow-600">中</span></td>
+                            <td class="px-4 py-2">L4</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded">推荐</span>
+                            </td>
+                        </tr>
+                        <tr class="border-t bg-green-50">
+                            <td class="px-4 py-2 font-medium">D. 组合方案</td>
+                            <td class="px-4 py-2"><span class="text-green-600">极高</span></td>
+                            <td class="px-4 py-2"><span class="text-yellow-600">中</span></td>
+                            <td class="px-4 py-2"><span class="text-green-600">高</span></td>
+                            <td class="px-4 py-2">L4-L5</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 bg-green-200 text-green-900 rounded font-bold">强烈推荐</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ThinApp 软件商店</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        .app-card {
+            transition: all 0.3s ease;
+        }
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .category-icon {
+            transition: all 0.2s ease;
+        }
+        .category-icon:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.location.href='index.html'" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-arrow-left text-xl text-gray-700"></i>
+                    </button>
+                    <div class="flex items-center">
+                        <i class="fas fa-store text-2xl text-purple-600"></i>
+                        <span class="ml-2 text-xl font-bold text-gray-900">AI ThinApp 商店</span>
+                    </div>
+                </div>
+                <div class="flex-1 max-w-lg mx-8">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索应用..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-gray-600 hover:text-gray-900 transition relative">
+                        <i class="fas fa-download text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:text-gray-900 transition">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 分类浏览 -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">分类浏览</h2>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">办公软件</span>
+                </div>
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">开发工具</span>
+                </div>
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">游戏</span>
+                </div>
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">工具</span>
+                </div>
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-photo-video"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">媒体</span>
+                </div>
+                <div class="category-icon flex flex-col items-center p-4 bg-gray-50 rounded-xl hover:bg-purple-50 cursor-pointer">
+                    <div class="w-12 h-12 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">其他</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 热门应用推荐 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">热门推荐</h2>
+        <div class="flex space-x-4 overflow-x-auto pb-4">
+            <!-- 热门应用卡片 1 -->
+            <div class="flex-none w-64 app-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-6xl">
+                    <i class="fab fa-qq"></i>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">QQ</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <span class="text-yellow-400 mr-1">★</span> 4.8 | 1.2k 下载
+                    </div>
+                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 热门应用卡片 2 -->
+            <div class="flex-none w-64 app-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white text-6xl">
+                    <i class="fab fa-weixin"></i>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">微信</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <span class="text-yellow-400 mr-1">★</span> 4.9 | 850 下载
+                    </div>
+                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 热门应用卡片 3 -->
+            <div class="flex-none w-64 app-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-6xl">
+                    <i class="fab fa-chrome"></i>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">Chrome</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <span class="text-yellow-400 mr-1">★</span> 4.7 | 3.5k 下载
+                    </div>
+                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 热门应用卡片 4 -->
+            <div class="flex-none w-64 app-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-6xl">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">VSCode</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <span class="text-yellow-400 mr-1">★</span> 4.9 | 2.1k 下载
+                    </div>
+                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 热门应用卡片 5 -->
+            <div class="flex-none w-64 app-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-6xl">
+                    <i class="fab fa-firefox"></i>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-1">Firefox</h3>
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <span class="text-yellow-400 mr-1">★</span> 4.6 | 1.8k 下载
+                    </div>
+                    <button class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 推荐应用列表 -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">推荐应用</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- 应用卡片 1 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fab fa-qq"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.8 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">QQ</h3>
+                <p class="text-sm text-gray-500 mb-2">腾讯 | 版本: 9.9.15</p>
+                <p class="text-sm text-gray-600 mb-4">即时通讯软件，支持文字、语音、视频通话</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>1.2k</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 应用卡片 2 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.9 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">微信</h3>
+                <p class="text-sm text-gray-500 mb-2">Tencent | 版本: 3.9.5</p>
+                <p class="text-sm text-gray-600 mb-4">跨平台即时通讯工具</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>850</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 应用卡片 3 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fab fa-chrome"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.7 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">Chrome</h3>
+                <p class="text-sm text-gray-500 mb-2">Google | 版本: 120.0</p>
+                <p class="text-sm text-gray-600 mb-4">快速、安全的网页浏览器</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>3.5k</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 应用卡片 4 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.9 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">VSCode</h3>
+                <p class="text-sm text-gray-500 mb-2">Microsoft | 版本: 1.85.1</p>
+                <p class="text-sm text-gray-600 mb-4">轻量级代码编辑器</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>2.1k</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 应用卡片 5 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fab fa-firefox"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.6 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">Firefox</h3>
+                <p class="text-sm text-gray-500 mb-2">Mozilla | 版本: 121.0</p>
+                <p class="text-sm text-gray-600 mb-4">注重隐私的保护的浏览器</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>1.8k</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+
+            <!-- 应用卡片 6 -->
+            <div class="app-card bg-white rounded-xl shadow-md p-6 cursor-pointer">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-white text-3xl">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <span class="text-sm text-gray-500">4.8 ★</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">Notion</h3>
+                <p class="text-sm text-gray-500 mb-2">Notion | 版本: 2.0.3</p>
+                <p class="text-sm text-gray-600 mb-4">一体化工作空间</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500"><i class="fas fa-download mr-1"></i>950</span>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm">
+                        安装
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 安装进度弹窗（演示用，默认隐藏） -->
+    <div id="install-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">安装完成！</h3>
+                <p class="text-gray-600">应用已成功安装到您的应用库</p>
+            </div>
+            <button onclick="closeInstallModal()" class="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium">
+                确定
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟安装按钮点击
+        document.querySelectorAll('button:contains("安装")').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 显示进度条（简化演示）
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>下载中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check mr-2"></i>安装完成';
+                    this.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    this.classList.add('bg-green-600');
+                    
+                    // 显示完成弹窗
+                    setTimeout(() => {
+                        document.getElementById('install-modal').classList.remove('hidden');
+                    }, 500);
+                }, 2000);
+            });
+        });
+
+        function closeInstallModal() {
+            document.getElementById('install-modal').classList.add('hidden');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
