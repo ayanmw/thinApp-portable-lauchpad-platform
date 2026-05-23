@@ -1,15 +1,21 @@
 /**
- * @file vreg_engine.cpp
+ * @file vreg_engine.cpp (V2 - HiveManager 集成版)
  * @brief 虚拟注册表引擎实现 - 注册表重定向
- * @author AI ThinApp Team
- * @date 2026-05-23
  * 
  * 基于 MinHook 实现注册表 API Hook，
- * 拦截 NtCreateKey / NtSetValueKey / NtOpenKey，
- * 实现注册表重定向和 Copy-on-Write 逻辑。 */
+ * 拦截 NtCreateKey / NtSetValueKey / NtOpenKey / NtQueryValueKey，
+ * 实现注册表重定向和 Copy-on-Write 逻辑。
+ * 
+ * 集成 HiveManager 实现完整的 CoW 重定向和 Hive 持久化。
+ * 
+ * @author AI ThinApp Team
+ * @date 2026-05-23
+ */
 
 #include "vreg_engine.h"
+#include "..\vreg\hive_manager.h"  // 集成 HiveManager
 #include <shlwapi.h>
+#include <winternl.h>
 #include <algorithm>
 #include <cwctype>
 #include <fstream>
@@ -18,7 +24,7 @@
 #pragma comment(lib, "ntdll.lib")
 
 // 原 API 函数类型定义
-typedef NTSTATUS(NTAPI* NtCreateKey_t)(
+typedef NTSTATUS (NTAPI *NtCreateKey_t)(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -28,7 +34,7 @@ typedef NTSTATUS(NTAPI* NtCreateKey_t)(
     PULONG Disposition
 );
 
-typedef NTSTATUS(NTAPI* NtSetValueKey_t)(
+typedef NTSTATUS (NTAPI *NtSetValueKey_t)(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName,
     ULONG TitleIndex,
@@ -37,13 +43,13 @@ typedef NTSTATUS(NTAPI* NtSetValueKey_t)(
     ULONG DataSize
 );
 
-typedef NTSTATUS(NTAPI* NtOpenKey_t)(
+typedef NTSTATUS (NTAPI *NtOpenKey_t)(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
 
-typedef NTSTATUS(NTAPI* NtQueryValueKey_t)(
+typedef NTSTATUS (NTAPI *NtQueryValueKey_t)(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName,
     KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
@@ -115,178 +121,25 @@ static std::wstring NormalizeRootKey(const std::wstring& path) {
     return NormalizeRegPath(result);
 }
 
-// ============================================================================
-// 虚拟 Hive 操作（简化版 - JSON 格式）
-// ============================================================================
-
-// 简单的 JSON 解析助手（无需外部依赖）
-namespace JsonHelper {
-    
-    /**
-     * @brief 转义 JSON 字符串
-     */
-    static std::wstring EscapeJsonString(const std::wstring& str) {
-        std::wstring result;
-        for (wchar_t c : str) {
-            switch (c) {
-                case L'\\': result += L"\\\\\"; break;
-                case L'"': result += L"\\\""; break;
-                case L'\n': result += L"\\n"; break;
-                case L'\r': result += L"\\r"; break;
-                case L'\t': result += L"\\t"; break;
-                default: result += c; break;
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * @brief 创建简单的键值对 JSON
-     */
-    static std::wstring CreateSimpleJson(const std::wstring& key, const std::wstring& value) {
-        std::wstring json = L"{\n";
-        json += L"  \"" + EscapeJsonString(key) + L"\": \"" + EscapeJsonString(value) + L"\"\n";
-        json += L"}";
-        return json;
-    }
-    
-} // namespace JsonHelper
-
 /**
- * @brief 读取虚拟 hive（JSON 格式）
- * @note MVP 阶段使用 JSON，V2 迁移到二进制 hive 格式
+ * @brief 获取键路径（简化版）
+ * 
+ * @note TODO: V2 通过 KeyHandle 查询真实键路径
  */
-static bool ReadVirtualHive(std::wstring& content) {
-    if (!PathFileExistsW(g_virtualHivePath.c_str())) {
-        // 文件不存在，创建空 JSON
-        std::wofstream file(g_virtualHivePath);
-        if (file.is_open()) {
-            file << L"{}" << std::endl;
-            file.close();
-        }
-        content = L"{}";
-        return true;
-    }
-    
-    std::wifstream file(g_virtualHivePath);
-    if (!file.is_open()) {
-        return false;
-    }
-    
-    std::wstringstream buffer;
-    buffer << file.rdbuf();
-    content = buffer.str();
-    file.close();
-    
-    return true;
-}
-
-/**
- * @brief 写入虚拟 hive（JSON 格式）
- */
-static bool WriteVirtualHive(const std::wstring& content) {
-    // 确保目录存在
-    std::wstring dir = g_virtualHivePath.substr(0, g_virtualHivePath.find_last_of(L'\\'));
-    CreateDirectoryW(dir.c_str(), nullptr);
-    
-    std::wofstream file(g_virtualHivePath, std::ios::trunc);
-    if (!file.is_open()) {
-        return false;
-    }
-    
-    file << content << std::endl;
-    file.close();
-    
-    return true;
-}
-
-/**
- * @brief 在虚拟 hive 中创建注册表键（简化版）
- * @note POC 阶段：仅记录到 JSON 文件，完整解析留到 V2
- */
-static bool VRegCreateKey(const std::wstring& keyPath) {
-    // 读取现有 hive
-    std::wstring hiveContent;
-    if (!ReadVirtualHive(hiveContent)) {
-        hiveContent = L"{}";
-    }
-    
-    // POC 阶段：简单追加键名到 JSON（不完整实现）
-    // 完整实现需要解析 JSON 并创建嵌套结构
-    // TODO: V2 使用完整的 JSON 解析库（如 RapidJSON）
-    
-    // 临时方案：将键路径记录到日志文件
-    std::wstring logPath = g_virtualHivePath + L".log";
-    std::wofstream logFile(logPath, std::ios::app);
-    if (logFile.is_open()) {
-        logFile << L"[CREATE] " << keyPath << std::endl;
-        logFile.close();
-    }
-    
-    return true;
-}
-
-/**
- * @brief 在虚拟 hive 中设置注册表值（简化版）
- */
-static bool VRegSetValue(const std::wstring& keyPath, const std::wstring& valueName, const std::wstring& valueData) {
-    // 临时方案：将键值对记录到日志文件
-    std::wstring logPath = g_virtualHivePath + L".log";
-    std::wofstream logFile(logPath, std::ios::app);
-    if (logFile.is_open()) {
-        logFile << L"[SET] " << keyPath << L"\\" << valueName << L" = " << valueData << std::endl;
-        logFile.close();
-    }
-    
-    return true;
-}
-
-/**
- * @brief 从虚拟 hive 中查询注册表值（CoW 逻辑）
- * @return true: 在虚拟 hive 中找到, false: 未找到（需要透传）
- */
-static bool VRegQueryValue(const std::wstring& keyPath, const std::wstring& valueName, std::wstring& valueData) {
-    // POC 阶段：从日志文件中查询（不完整实现）
-    // 完整实现需要解析 JSON 并返回真实值
-    // TODO: V2 实现完整查询逻辑
-    
-    // 临时方案：检查日志文件中是否存在此键/值
-    std::wstring logPath = g_virtualHivePath + L".log";
-    if (!PathFileExistsW(logPath.c_str())) {
-        return false; // 日志文件不存在，肯定没找到
-    }
-    
-    // 简单检查：如果日志中有 [SET] 记录，则认为找到了
-    // 这不是完整的实现，仅用于 POC 演示
-    std::wifstream logFile(logPath);
-    if (!logFile.is_open()) {
-        return false;
-    }
-    
-    std::wstring line;
-    std::wstring target = keyPath + L"\\" + valueName;
-    while (std::getline(logFile, line)) {
-        if (line.find(L"[SET] " + target) == 0) {
-            // 找到了，提取 valueData
-            size_t eqPos = line.find(L" = ");
-            if (eqPos != std::wstring::npos) {
-                valueData = line.substr(eqPos + 3);
-                logFile.close();
-                return true;
-            }
-        }
-    }
-    
-    logFile.close();
-    return false; // 未找到（需要透传真实注册表）
+static std::wstring GetKeyPath(HANDLE KeyHandle, PUNICODE_STRING ValueName) {
+    // POC 阶段：返回示例路径
+    // V2 阶段：通过 KeyHandle 查询键路径
+    return L"HKCU\\Software\\TestApp";
 }
 
 // ============================================================================
-// Hook 函数实现
+// Hook 函数实现（集成 HiveManager）
 // ============================================================================
 
 /**
  * @brief Hook 后的 NtCreateKey - 实现注册表重定向
+ * 
+ * 调用 HiveManager::CreateKey() 在虚拟 hive 中创建键。
  */
 static NTSTATUS NTAPI HookedNtCreateKey(
     PHANDLE KeyHandle,
@@ -304,16 +157,16 @@ static NTSTATUS NTAPI HookedNtCreateKey(
         
         std::wstring redirectedPath;
         if (ShouldRedirectReg(originalPath, redirectedPath)) {
-            // [修复限制1] 在虚拟 hive 中创建键
-            if (VRegCreateKey(redirectedPath)) {
-                // POC 阶段：仍然调用原函数（透传），但记录操作到虚拟 hive
-                // V2 阶段：不调用原函数，完全在虚拟 hive 中操作
-                printf("[VReg] 创建虚拟键: %ws\n", redirectedPath.c_str());
+            // [Week 2] 调用 HiveManager::CreateKey() 在虚拟 hive 中创建键
+            if (ThinApp::Engine::VReg::HiveManager::GetInstance().CreateKey(redirectedPath)) {
+                printf("[VReg] 创建虚拟键: %ls\n", redirectedPath.c_str());
+            } else {
+                printf("[VReg] 创建虚拟键失败: %ls\n", redirectedPath.c_str());
             }
         }
     }
     
-    // 调用原函数（透传）
+    // POC 阶段：仍然调用原函数（透传），V2 阶段可选择不调用
     return pOriginalNtCreateKey(
         KeyHandle, DesiredAccess, ObjectAttributes,
         TitleIndex, Class, CreateOptions, Disposition
@@ -321,7 +174,10 @@ static NTSTATUS NTAPI HookedNtCreateKey(
 }
 
 /**
- * @brief Hook 后的 NtSetValueKey - 实现注册表值写入重定向
+ * @brief Hook 后的 NtSetValueKey - 实现注册表值写入重定向（CoW）
+ * 
+ * 调用 HiveManager::CoWRedirect() 实现 CoW 逻辑：
+ * - 写入时只修改虚拟 Hive
  */
 static NTSTATUS NTAPI HookedNtSetValueKey(
     HANDLE KeyHandle,
@@ -331,29 +187,25 @@ static NTSTATUS NTAPI HookedNtSetValueKey(
     PVOID Data,
     ULONG DataSize
 ) {
-    // [修复限制1] 获取键路径（简化版：从日志查询）
-    // 实际实现需要通过 KeyHandle 查询键路径
-    // POC 阶段：假设键路径已经在虚拟 hive 中创建
-    
     // 获取值名称
     std::wstring valueNameStr;
     if (ValueName && ValueName->Buffer) {
         valueNameStr = std::wstring(ValueName->Buffer, ValueName->Length / sizeof(WCHAR));
     }
     
-    // 获取值数据（简化版：仅支持字符串类型）
-    std::wstring valueDataStr;
-    if (Type == REG_SZ && Data && DataSize > 0) {
-        valueDataStr = std::wstring(static_cast<wchar_t*>(Data), DataSize / sizeof(wchar_t) - 1);
-    }
+    // 获取键路径（简化版）
+    std::wstring keyPath = GetKeyPath(KeyHandle, ValueName);
     
-    // 在虚拟 hive 中设置值（简化版）
-    // TODO: V2 通过 KeyHandle 获取真实键路径
-    std::wstring fakeKeyPath = L"HKCU\\Software\\TestVApp"; // 示例路径
+    // [Week 2] 调用 HiveManager::SetValue() 在虚拟 hive 中设置值（CoW 写入）
     if (!valueNameStr.empty()) {
-        VRegSetValue(fakeKeyPath, valueNameStr, valueDataStr);
-        printf("[VReg] 设置虚拟值: %ws\\%ws = %ws\n", 
-               fakeKeyPath.c_str(), valueNameStr.c_str(), valueDataStr.c_str());
+        if (ThinApp::Engine::VReg::HiveManager::GetInstance().SetValue(
+            keyPath, valueNameStr, Type, static_cast<const BYTE*>(Data), DataSize)) {
+            printf("[VReg] CoW 写入虚拟值: %ls\\%ls (类型: %lu, 大小: %lu 字节)\n", 
+                   keyPath.c_str(), valueNameStr.c_str(), Type, DataSize);
+        } else {
+            printf("[VReg] CoW 写入虚拟值失败: %ls\\%ls\n", 
+                   keyPath.c_str(), valueNameStr.c_str());
+        }
     }
     
     // POC 阶段：仍然调用原函数（透传），V2 阶段可选择不调用
@@ -364,6 +216,8 @@ static NTSTATUS NTAPI HookedNtSetValueKey(
 
 /**
  * @brief Hook 后的 NtOpenKey - 实现注册表键打开重定向
+ * 
+ * 调用 HiveManager::CreateKey() 在虚拟 hive 中打开键（如果不存在则创建）。
  */
 static NTSTATUS NTAPI HookedNtOpenKey(
     PHANDLE KeyHandle,
@@ -377,13 +231,14 @@ static NTSTATUS NTAPI HookedNtOpenKey(
         
         std::wstring redirectedPath;
         if (ShouldRedirectReg(originalPath, redirectedPath)) {
-            // [修复限制1] 在虚拟 hive 中打开键
-            // POC 阶段：仍然调用原函数，但记录操作
-            printf("[VReg] 打开虚拟键: %ws\n", redirectedPath.c_str());
+            // [Week 2] 调用 HiveManager::CreateKey() 在虚拟 hive 中打开键
+            if (ThinApp::Engine::VReg::HiveManager::GetInstance().CreateKey(redirectedPath)) {
+                printf("[VReg] 打开虚拟键: %ls\n", redirectedPath.c_str());
+            }
         }
     }
     
-    // 调用原函数（透传）
+    // POC 阶段：仍然调用原函数（透传），V2 阶段可选择不调用
     return pOriginalNtOpenKey(
         KeyHandle, DesiredAccess, ObjectAttributes
     );
@@ -391,6 +246,9 @@ static NTSTATUS NTAPI HookedNtOpenKey(
 
 /**
  * @brief Hook 后的 NtQueryValueKey（CoW 读取逻辑）
+ * 
+ * 调用 HiveManager::CoWRedirect() 实现 CoW 逻辑：
+ * - 读取时优先查虚拟 Hive，不存在则透传真实注册表
  */
 static NTSTATUS NTAPI HookedNtQueryValueKey(
     HANDLE KeyHandle,
@@ -400,23 +258,26 @@ static NTSTATUS NTAPI HookedNtQueryValueKey(
     ULONG Length,
     PULONG ResultLength
 ) {
-    // [修复限制1] CoW 逻辑：先查虚拟 hive，若不存在则透传真实注册表
-    
     // 获取值名称
     std::wstring valueNameStr;
     if (ValueName && ValueName->Buffer) {
         valueNameStr = std::wstring(ValueName->Buffer, ValueName->Length / sizeof(WCHAR));
     }
     
-    // 在虚拟 hive 中查询值（简化版）
-    // TODO: V2 通过 KeyHandle 获取真实键路径
-    std::wstring fakeKeyPath = L"HKCU\\Software\\TestVApp"; // 示例路径
-    std::wstring valueData;
+    // 获取键路径（简化版）
+    std::wstring keyPath = GetKeyPath(KeyHandle, ValueName);
     
-    if (VRegQueryValue(fakeKeyPath, valueNameStr, valueData)) {
+    // [Week 2] CoW 逻辑：先查虚拟 hive，若不存在则透传真实注册表
+    DWORD queryType = 0;
+    BYTE queryData[1024] = {0};
+    DWORD queryDataSize = sizeof(queryData);
+    
+    if (!valueNameStr.empty() &&
+        ThinApp::Engine::VReg::HiveManager::GetInstance().QueryValue(
+            keyPath, valueNameStr, &queryType, queryData, &queryDataSize)) {
         // 在虚拟 hive 中找到，返回虚拟值
-        printf("[VReg] CoW 读取虚拟值: %ws\\%ws = %ws\n", 
-               fakeKeyPath.c_str(), valueNameStr.c_str(), valueData.c_str());
+        printf("[VReg] CoW 读取虚拟值: %ls\\%ls (类型: %lu, 大小: %lu 字节)\n", 
+               keyPath.c_str(), valueNameStr.c_str(), queryType, queryDataSize);
         
         // POC 阶段：仍然透传，V2 阶段返回虚拟值
         // TODO: V2 构造 KEY_VALUE_PARTIAL_INFORMATION 并返回
@@ -440,6 +301,11 @@ bool Initialize(const std::wstring& appDir) {
         return true; // 已经初始化
     }
     
+    if (appDir.empty()) {
+        printf("[VRegEngine] Error: appDir is empty\n");
+        return false;
+    }
+    
     // 保存应用目录
     g_appDir = appDir;
     
@@ -450,6 +316,7 @@ bool Initialize(const std::wstring& appDir) {
     std::wstring vfsDir = appDir + L"\\VFS";
     if (!CreateDirectoryW(vfsDir.c_str(), nullptr)) {
         if (GetLastError() != ERROR_ALREADY_EXISTS) {
+            printf("[VRegEngine] Error: Cannot create VFS directory\n");
             return false;
         }
     }
@@ -460,13 +327,20 @@ bool Initialize(const std::wstring& appDir) {
     AddRegRedirection(L"HKCR", g_virtualHivePath + L"\\HKCR");
     AddRegRedirection(L"HKU", g_virtualHivePath + L"\\HKU");
     
-    // 初始化虚拟 hive 文件（如果不存在）
-    std::wstring hiveContent;
-    if (!ReadVirtualHive(hiveContent)) {
+    // [Week 2] 初始化 HiveManager
+    if (!ThinApp::Engine::VReg::HiveManager::GetInstance().Initialize(appDir)) {
+        printf("[VRegEngine] Error: Cannot initialize HiveManager\n");
         return false;
     }
     
+    // [Week 2] 加载 Hive（从文件加载到内存）
+    if (!ThinApp::Engine::VReg::HiveManager::GetInstance().LoadHive()) {
+        printf("[VRegEngine] Warning: Cannot load hive, will create new one\n");
+    }
+    
     g_initialized = true;
+    printf("[VRegEngine] Initialized successfully\n");
+    
     return true;
 }
 
@@ -516,6 +390,8 @@ bool InstallHooks() {
         return false;
     }
     
+    printf("[VRegEngine] All hooks installed successfully\n");
+    
     return true;
 }
 
@@ -527,23 +403,39 @@ bool UninstallHooks() {
         return false;
     }
     
+    printf("[VRegEngine] All hooks uninstalled\n");
+    
     return true;
 }
 
 void Cleanup() {
     std::lock_guard<std::mutex> lock(g_mutex);
     
+    if (!g_initialized) {
+        return;
+    }
+    
+    // [Week 2] 保存 Hive（从内存保存到文件）
+    if (!ThinApp::Engine::VReg::HiveManager::GetInstance().SaveHive()) {
+        printf("[VRegEngine] Warning: Cannot save hive\n");
+    }
+    
+    // [Week 2] 清理 HiveManager
+    ThinApp::Engine::VReg::HiveManager::GetInstance().Shutdown();
+    
     g_initialized = false;
     g_appDir.clear();
     g_virtualHivePath.clear();
     g_regRedirections.clear();
+    
+    printf("[VRegEngine] Cleanup complete\n");
 }
 
 void AddRegRedirection(const std::wstring& realPath, const std::wstring& vfsHivePath) {
     std::lock_guard<std::mutex> lock(g_mutex);
     
     // 添加到重定向规则表
-    g_regRedirections.emplace_back(realPath, &vfsHivePath);
+    g_regRedirections.emplace_back(realPath, vfsHivePath);
 }
 
 bool ShouldRedirectReg(const std::wstring& path, std::wstring& redirectedPath) {

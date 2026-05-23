@@ -72,6 +72,9 @@ target_link_libraries(hook_engine PRIVATE
 
 # MSVC 编译选项
 if(MSVC)
+    # 使用 UTF-8 编码（解决 C4819 警告）
+    target_compile_options(hook_engine PRIVATE /utf-8)
+    
     # 禁用 RTTI（减小体积）
     target_compile_options(hook_engine PRIVATE /GR-)
     

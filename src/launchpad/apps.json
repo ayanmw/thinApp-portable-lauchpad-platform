@@ -1,0 +1,26 @@
+[
+  {
+    "name": "QQ",
+    "exePath": "D:/ThinAppApps/QQ/QQ.exe",
+    "iconPath": "D:/ThinAppApps/QQ/icon.ico",
+    "appDir": "D:/ThinAppApps/QQ",
+    "isPortable": true,
+    "lastLaunchTime": "2026-05-23T18:30:00"
+  },
+  {
+    "name": "微信",
+    "exePath": "D:/ThinAppApps/WeChat/WeChat.exe",
+    "iconPath": "D:/ThinAppApps/WeChat/icon.ico",
+    "appDir": "D:/ThinAppApps/WeChat",
+    "isPortable": true,
+    "lastLaunchTime": "2026-05-23T18:25:00"
+  },
+  {
+    "name": "Chrome",
+    "exePath": "D:/ThinAppApps/Chrome/Chrome.exe",
+    "iconPath": "D:/ThinAppApps/Chrome/icon.ico",
+    "appDir": "D:/ThinAppApps/Chrome",
+    "isPortable": true,
+    "lastLaunchTime": "2026-05-23T18:20:00"
+  }
+]
