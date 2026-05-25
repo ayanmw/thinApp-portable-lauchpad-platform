@@ -1,5 +1,7 @@
 # AI ThinApp Portable Launchpad Platform
 
+> 版本：v0.1.0 MVP
+> 更新日期：2026-05-24
 > 个人软件便携化平台——每个软件自带独立沙箱，所有依赖、配置、数据全在软件目录下，重装系统后复制文件夹即可恢复全部使用状态。
 
 [![CI](https://github.com/anmingwei/ai-thinApp-portable-lauchpad-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/anmingwei/ai-thinApp-portable-lauchpad-platform/actions/workflows/ci.yml)
