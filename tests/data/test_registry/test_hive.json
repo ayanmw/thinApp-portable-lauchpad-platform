@@ -1,0 +1,43 @@
+{
+  "description": "测试注册表 Hive 文件，用于验证注册表重定向功能",
+  "test_purpose": [
+    "验证注册表重定向功能是否正常工作",
+    "验证重定向后的注册表路径是否正确",
+    "验证应用可以正常读写重定向后的注册表"
+  ],
+  "test_method": [
+    "在应用中创建或修改 HKEY_CURRENT_USER\\Software\\TestKey",
+    "检查注册表是否实际保存到 {AppDir}\\VFS\\registry.hive",
+    "验证注册表键值是否正确"
+  ],
+  "expected_result": {
+    "registry_redirected": true,
+    "redirected_path": "{AppDir}\\VFS\\registry.hive",
+    "registry_content_correct": true,
+    "app_can_access_redirected_registry": true
+  },
+  "test_data": {
+    "HKEY_CURRENT_USER\\Software\\TestKey": {
+      "StringValue": {
+        "type": "REG_SZ",
+        "value": "Test String Value"
+      },
+      "DWORDValue": {
+        "type": "REG_DWORD",
+        "value": 123456
+      },
+      "BinaryValue": {
+        "type": "REG_BINARY",
+        "value": "Binary Test Data"
+      }
+    },
+    "HKEY_CURRENT_USER\\Software\\TestKey\\SubKey": {
+      "SubKeyValue": {
+        "type": "REG_SZ",
+        "value": "Sub Key Value"
+      }
+    }
+  },
+  "test_time": "2026-05-23",
+  "tester": "Qt/C++ 测试工程师"
+}

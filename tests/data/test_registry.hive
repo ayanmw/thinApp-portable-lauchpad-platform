@@ -1,0 +1,20 @@
+Windows Registry Editor Version 5.00
+
+; 虚拟注册表测试数据（模拟）
+; 用于 MVP 测试环境的注册表 hive 文件
+
+[HKEY_CURRENT_USER\Software\ThinAppTest]
+"InstallPath"="C:\\ThinApp\\"
+"Version"="1.0.0"
+"EnableLogging"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\ThinAppTest\Applications]
+"Notepad++"="C:\\ThinApp\\Apps\\notepad++.exe"
+"7-Zip"="C:\\ThinApp\\Apps\\7z.exe"
+"Firefox"="C:\\ThinApp\\Apps\\firefox_portable.exe"
+
+[HKEY_CURRENT_USER\Software\ThinAppTest\Settings]
+"SandboxPath"="C:\\ThinApp\\Sandbox\\"
+"VFSRoot"="C:\\ThinApp\\VFS\\"
+"RegistryVirtualization"=dword:00000001
+"FileSystemVirtualization"=dword:00000001

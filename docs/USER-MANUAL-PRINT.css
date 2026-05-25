@@ -1,0 +1,370 @@
+/* USER-MANUAL-PRINT.css - 打印样式表 */
+/* 用于 USER-MANUAL.md 的打印版本 */
+
+/* ==================== */
+/* 基础样式 */
+/* ==================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #333;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==================== */
+/* 标题样式 */
+/* ==================== */
+
+h1 {
+    font-size: 24pt;
+    font-weight: bold;
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 20pt;
+    font-weight: bold;
+    color: #2c3e50;
+    border-bottom: 2px solid #95a5a6;
+    padding-bottom: 8px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #34495e;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h4 {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #34495e;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+/* ==================== */
+/* 段落和文本 */
+/* ==================== */
+
+p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+strong {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+code {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10pt;
+    background: #f4f4f4;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+pre {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    overflow-x: auto;
+    page-break-inside: avoid;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* ==================== */
+/* 链接 */
+/* ==================== */
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 打印时显示链接 URL */
+@media print {
+    a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 9pt;
+        color: #7f8c8d;
+    }
+    
+    /* 内部链接不显示 URL */
+    a[href^="#"]:after,
+    a[href^="mailto:"]:after {
+        content: "";
+    }
+}
+
+/* ==================== */
+/* 列表 */
+/* ==================== */
+
+ul, ol {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 30px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+/* ==================== */
+/* 表格 */
+/* ==================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+}
+
+th {
+    background: #3498db;
+    color: #fff;
+    font-weight: bold;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #2980b9;
+}
+
+td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+/* ==================== */
+/* 引用块 */
+/* ==================== */
+
+blockquote {
+    border-left: 4px solid #3498db;
+    background: #ecf0f1;
+    margin: 10px 0;
+    padding: 10px 15px;
+    page-break-inside: avoid;
+}
+
+/* ==================== */
+/* 分隔线 */
+/* ==================== */
+
+hr {
+    border: none;
+    border-top: 2px solid #95a5a6;
+    margin: 30px 0;
+}
+
+/* ==================== */
+/* 图片 */
+/* ==================== */
+
+img {
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+}
+
+/* ==================== */
+/* 页面设置（打印） */
+/* ==================== */
+
+@page {
+    size: A4;
+    margin: 2cm;
+    
+    @bottom-center {
+        content: "第 " counter(page) " 页，共 " counter(pages) " 页";
+        font-size: 9pt;
+        color: #7f8c8d;
+    }
+}
+
+/* ==================== */
+/* 打印分页控制 */
+/* ==================== */
+
+page-break-before: always;
+page-break-after: always;
+page-break-inside: avoid;
+
+/* 在指定元素前分页 */
+.break-before {
+    page-break-before: always;
+}
+
+/* 在指定元素后分页 */
+.break-after {
+    page-break-after: always;
+}
+
+/* 指定元素内不分页 */
+.no-break {
+    page-break-inside: avoid;
+}
+
+/* ==================== */
+/* 封面页 */
+/* ==================== */
+
+.cover {
+    text-align: center;
+    padding-top: 10cm;
+}
+
+.cover h1 {
+    font-size: 36pt;
+    border: none;
+}
+
+.cover p {
+    font-size: 16pt;
+    color: #7f8c8d;
+}
+
+/* ==================== */
+/* 目录 */
+/* ==================== */
+
+.toc {
+    page-break-before: always;
+}
+
+.toc h2 {
+    border: none;
+}
+
+.toc ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.toc li {
+    margin-bottom: 10px;
+}
+
+.toc a {
+    color: #2c3e50;
+}
+
+/* ==================== */
+/* 代码块（带行号） */
+/* ==================== */
+
+.code-block {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 10pt;
+    line-height: 1.4;
+    overflow-x: auto;
+    page-break-inside: avoid;
+}
+
+/* ==================== */
+/* 提示框 */
+/* ==================== */
+
+.tip {
+    background: #d4efdf;
+    border-left: 4px solid #27ae60;
+    padding: 10px 15px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+}
+
+.warning {
+    background: #fdebd0;
+    border-left: 4px solid #f39c12;
+    padding: 10px 15px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+}
+
+.error {
+    background: #fadbd8;
+    border-left: 4px solid #e74c3c;
+    padding: 10px 15px;
+    margin: 10px 0;
+    page-break-inside: avoid;
+}
+
+/* ==================== */
+/* 打印优化 */
+/* ==================== */
+
+@media print {
+    /* 隐藏不需要打印的元素 */
+    .no-print,
+    nav,
+    .sidebar,
+    .header,
+    .footer {
+        display: none !important;
+    }
+    
+    /* 确保所有内容可见 */
+    body {
+        font-size: 12pt;
+    }
+    
+    /* 链接不显示下划线（打印版） */
+    a {
+        text-decoration: none;
+    }
+    
+    /* 表格边框加深（打印版） */
+    table {
+        border: 2px solid #333;
+    }
+    
+    th {
+        background: #333 !important;
+        color: #fff !important;
+    }
+    
+    td {
+        border: 1px solid #666;
+    }
+}

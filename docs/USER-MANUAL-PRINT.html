@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ThinApp Portable Launchpad — 用户手册（打印版）</title>
+    <link rel="stylesheet" href="USER-MANUAL-PRINT.css">
+    <style>
+        /* 基础样式（内联，确保打印效果） */
+        body {
+            font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            page-break-after: avoid;
+        }
+        
+        h2 {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 8px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #34495e;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        
+        p {
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+        
+        th {
+            background: #3498db;
+            color: #fff;
+            font-weight: bold;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #2980b9;
+        }
+        
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        pre {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+        
+        code {
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 10pt;
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            background: #ecf0f1;
+            margin: 10px 0;
+            padding: 10px 15px;
+            page-break-inside: avoid;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #95a5a6;
+            margin: 30px 0;
+        }
+        
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            
+            pre, blockquote, table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 封面页 -->
+    <div class="cover">
+        <h1>AI ThinApp Portable Launchpad</h1>
+        <p>用户手册（打印版）</p>
+        <p>版本：v0.1.0 MVP</p>
+        <p>更新日期：2026-05-24</p>
+    </div>
+    
+    <hr>
+    
+    <!-- 目录（简要） -->
+    <div class="toc">
+        <h2>目录</h2>
+        <ul>
+            <li><a href="#chapter1">第 1 章：快速开始</a></li>
+            <li><a href="#chapter2">第 2 章：基本操作</a></li>
+            <li><a href="#chapter3">第 3 章：沙箱管理</a></li>
+            <li><a href="#chapter4">第 4 章：设置</a></li>
+            <li><a href="#chapter5">第 5 章：高级功能</a></li>
+            <li><a href="#chapter6">第 6 章：高级技巧</a></li>
+            <li><a href="#chapter7">第 7 章：卸载 ThinApp 平台</a></li>
+            <li><a href="#chapter8">第 8 章：常见问题速查表</a></li>
+            <li><a href="#chapter9">第 9 章：故障排除</a></li>
+        </ul>
+    </div>
+    
+    <hr>
+    
+    <!-- 说明 -->
+    <div class="tip">
+        <p><strong>打印说明：</strong></p>
+        <p>本文档是 <code>USER-MANUAL.md</code> 的打印版本。要生成完整的 PDF，请按照以下步骤操作：</p>
+        <ol>
+            <li>使用 Markdown 转 HTML 工具（如 <a href="https://pandoc.org/" target="_blank">Pandoc</a>）将 <code>USER-MANUAL.md</code> 转换为 HTML</li>
+            <li>将转换后的 HTML 内容替换到本文档的 <code>&lt;!-- 内容开始 --&gt;</code> 和 <code>&lt;!-- 内容结束 --&gt;</code> 之间</li>
+            <li>在浏览器中打开本文档，按 <code>Ctrl+P</code>（或 <code>Cmd+P</code>）打印为 PDF</li>
+        </ol>
+        <p>或者，直接使用浏览器打开 <code>USER-MANUAL.md</code>（使用支持 Markdown 的浏览器插件），然后打印为 PDF。</p>
+    </div>
+    
+    <hr>
+    
+    <!-- 内容开始 -->
+    <!-- 请将 USER-MANUAL.md 转换后的 HTML 内容粘贴到此处 -->
+    <!-- 可以使用 Pandoc、marked.js、或其他 Markdown 转 HTML 工具 -->
+    
+    <div id="content">
+        <p><em>本文档的完整内容需要从 <code>USER-MANUAL.md</code> 转换。请参考上述"打印说明"部分。</em></p>
+        
+        <!-- 示例内容（转换后的 HTML） -->
+        <!--
+        <h1 id="chapter1">第 1 章：快速开始</h1>
+        <p>本章带你从零开始，完成 AI ThinApp Portable Launchpad 的下载、安装和首次使用。</p>
+        
+        <h2>1.1 产品简介</h2>
+        <p>AI ThinApp Portable Launchpad 是一款个人软件便携化平台。简单来说，它能做到：</p>
+        <ul>
+            <li><strong>每个软件独立隔离</strong>：软件的所有配置、缓存、数据文件都保存在软件自己的目录下...</li>
+        </ul>
+        -->
+    </div>
+    
+    <!-- 内容结束 -->
+    
+    <hr>
+    
+    <!-- 页脚 -->
+    <div style="text-align: center; font-size: 9pt; color: #7f8c8d; margin-top: 50px;">
+        <p>AI ThinApp Portable Launchpad Platform 开源社区</p>
+        <p>版本：v0.1.0 MVP | 更新日期：2026-05-24</p>
+        <p>许可证：MIT</p>
+    </div>
+</body>
+</html>

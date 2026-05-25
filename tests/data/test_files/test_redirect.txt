@@ -1,0 +1,23 @@
+这是一个测试文件，用于验证文件重定向功能。
+
+当应用尝试访问 C:\Windows\Temp\test_redirect.txt 时，
+AI ThinApp Portable Launchpad Platform 应该将文件重定向到
+{AppDir}\VFS\C\Windows\Temp\test_redirect.txt。
+
+测试目的：
+1. 验证文件重定向功能是否正常工作
+2. 验证重定向后的文件路径是否正确
+3. 验证应用可以正常读写重定向后的文件
+
+测试方法：
+1. 在应用中创建或打开 C:\Windows\Temp\test_redirect.txt
+2. 检查文件是否实际保存到 {AppDir}\VFS\C\Windows\Temp\test_redirect.txt
+3. 验证文件内容是否正确
+
+预期结果：
+- 文件实际保存到 VFS 目录中
+- 文件内容正确
+- 应用可以正常访问重定向后的文件
+
+测试时间：2026-05-23
+测试人员：Qt/C++ 测试工程师

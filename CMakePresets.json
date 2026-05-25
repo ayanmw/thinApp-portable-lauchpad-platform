@@ -1,0 +1,86 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default Config",
+      "description": "Default configuration using vcpkg toolchain",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "PATH",
+          "value": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        },
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      },
+      "environment": {
+        "VCPKG_ROOT": "C:/vcpkg"
+      },
+      "binaryDir": "${sourceDir}/build/${presetName}"
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug Config",
+      "description": "Debug configuration with vcpkg",
+      "inherits": "default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      },
+      "binaryDir": "${sourceDir}/build/debug"
+    },
+    {
+      "name": "release",
+      "displayName": "Release Config",
+      "description": "Release configuration with vcpkg",
+      "inherits": "default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      },
+      "binaryDir": "${sourceDir}/build/release"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "displayName": "Build Debug",
+      "description": "Build Debug configuration",
+      "configurePreset": "debug",
+      "configuration": "Debug",
+      "targets": ["ALL_BUILD"]
+    },
+    {
+      "name": "release",
+      "displayName": "Build Release",
+      "description": "Build Release configuration",
+      "configurePreset": "release",
+      "configuration": "Release",
+      "targets": ["ALL_BUILD"]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug",
+      "displayName": "Test Debug",
+      "description": "Run tests in Debug configuration",
+      "configurePreset": "debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "release",
+      "displayName": "Test Release",
+      "description": "Run tests in Release configuration",
+      "configurePreset": "release",
+      "configuration": "Release"
+    }
+  ]
+}

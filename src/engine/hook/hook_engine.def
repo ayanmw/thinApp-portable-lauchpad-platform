@@ -1,0 +1,12 @@
+EXPORTS
+    HookEngine_Initialize
+    HookEngine_InstallHooks
+    HookEngine_UninstallHooks
+    HookEngine_Shutdown
+    HookEngine_IsInitialized
+    HookEngine_EnableCaptureMode
+    HookEngine_DisableCaptureMode
+    HookEngine_IsCaptureModeEnabled
+    HookEngine_ClearCaptureRecords
+    HookEngine_GetCaptureRecordCount
+    HookEngine_GetCaptureRecords
